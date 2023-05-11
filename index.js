@@ -31,6 +31,18 @@ app.get('/api/faqs', async (req, res) => {
   }
 });
 
+app.put('/api/faqs/:QID/views', async (req, res) => {
+  try {
+    const pool = await mssql.connect(config);
+    const result = await pool.request()
+        .input('QID', mssql.Int, req.params.QID)
+        .query('UPDATE FAQs SET viewCount = viewCount + 1 WHERE QID = @QID');
+    res.status(200).json({ message: 'FAQ view count updated successfully' });
+  } catch (err) {
+    res.status(500).send('Error updating FAQ view count: ' + err.message);
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
